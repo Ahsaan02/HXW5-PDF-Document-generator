@@ -9,16 +9,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PDFInstant - Home</title>
     {% load static %}
-    <link rel="stylesheet" href="{% static 'pdfinstant/main.css' %}">
+    <link rel="stylesheet" href="{% static 'pdfinstant/homepage.css' %}">
 </head>
 <body>
-    <span>
-        <h1 id="second_title">Welcome To PDFInstant</h1>
-        <p>
-            This is the home page.
-        </p>
-    </span>
-    
+
+    <div class="responsive-box">
+        <h2>PDFInstant</h2>
+        <p>A CSV to PDF converter and Document generator</p>
+    </div>
+    <div class="get-started responsive-box">
+        <h3>Get Started</h3>
+    </div>
+
     <script
     type="text/javascript"
     src="{% static 'pdfinstant/run.js' %}"
