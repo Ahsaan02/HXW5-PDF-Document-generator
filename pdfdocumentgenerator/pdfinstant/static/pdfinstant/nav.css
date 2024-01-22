@@ -1,0 +1,93 @@
+* {
+    margin: 0;
+    padding: 0;
+    text-decoration: none;
+}
+
+header {
+    background: #0a0808;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+header nav ul {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+header nav a {  
+    color: #d6d4d4;
+    border: 3px solid transparent;
+    margin: 0 30px;
+    transition: 1.6s;
+}
+
+
+header nav ul li a:hover {
+    color: #000000;
+    padding: 0px 12px;
+    border-radius: 53px; 
+    background-color: #d6d4d4;
+}
+
+
+header nav a.current {  
+    color: #000000;
+    padding: 0px 12px;
+    border-radius: 53px; 
+    background-color: #d6d4d4;
+}
+
+
+@media only screen and (max-width: 700px) {
+    .responsivenav div {
+        cursor: pointer;
+        width: 22px;
+        height: 3px;
+        margin: 4px;
+        background: #d6d4d4;
+        transition: all 0.8s ease;
+    }
+    
+    header nav {
+        position: absolute;
+        top: 60px;
+        left: -100%;
+        width: 100%; 
+        background: #000000;
+    }
+    
+    #hamburgernav:checked ~ nav {
+        left: 0;
+    }
+    .responsivenav:hover div:nth-child(1) {
+        transform: translateX(-6px);
+    }
+    .responsivenav:hover div:nth-child(3) {
+        transform: translateX(6px);
+    }
+
+    
+    
+
+    header nav ul {
+        display: block;
+        padding: 30px; 
+    }
+
+    header nav ul li  {
+        display: block;
+        padding: 15px 15px;
+        color: #d6d4d4;
+        text-align: center;
+    }
+
+    header nav ul li a:hover {
+        color: #000000;
+        background-color: #d6d4d4;
+    }
+}

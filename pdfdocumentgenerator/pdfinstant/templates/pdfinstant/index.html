@@ -1,0 +1,34 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="{% static 'pdfinstant/nav.css' %}">
+</head>
+<body>
+    <header>
+        <input type="checkbox" id="hamburgernav" hidden>
+        <nav>
+            <ul>
+                <li><a href="/homepage" {% if request.path == '/homepage' %}class="current"{% endif %}>Homepage</a></li>
+                <li><a href="/aboutpage" {% if request.path == '/aboutpage' %}class="current"{% endif %}>About Us</a></li>
+                <li><a href="/generatepdfs" {% if request.path == '/generatepdfs' %}class="current"{% endif %}>Generate PDFs</a></li>
+                <li><a href="/signin" {% if request.path == '/signin' %}class="current"{% endif %}>Sign In</a></li>
+                
+            </ul>
+        </nav>
+        <label for="hamburgernav" class="responsivenav">
+            <div></div>
+            <div></div>
+            <div></div>
+        </label>
+        <script
+        type="text/javascript"
+        src="{% static 'pdfinstant/nav.js' %}"
+        ></script>
+    </header>
+
+    {% block content %}
+    {% endblock content %}
+</body>
+</html>
