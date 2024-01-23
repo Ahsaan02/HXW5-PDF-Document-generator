@@ -24,10 +24,14 @@ def generatepdfs(request):
     page = loader.get_template("pdfinstant/generatepdfs.html")
     return HttpResponse(page.render(request=request))
 
+def generatepdfsin(request):
+    page = loader.get_template("pdfinstant/generatepdfsin.html")
+    return HttpResponse(page.render(request=request))
+
 def signin(request):
     page = loader.get_template("pdfinstant/signin.html")
     return HttpResponse(page.render(request=request))
 
-def register(request):
-    page = loader.get_template("pdfinstant/register.html")
+def signup(request):
+    page = loader.get_template("pdfinstant/signup.html")
     return HttpResponse(page.render(request=request))
