@@ -10,5 +10,7 @@ urlpatterns = [
     path(route="generatepdfs", view=views.generatepdfs, name="generatepdfs"),
     path(route="generatepdfsin", view=views.generatepdfsin, name="generatepdfsin"),
     path(route="signin", view=views.signin, name="signin"),
-    path(route="signup", view=views.signup, name="signup")
+    path(route="signup", view=views.signup, name="signup"),
+
+    path(route="createaccount", view=views.createaccount, name="createaccount")
 ]
