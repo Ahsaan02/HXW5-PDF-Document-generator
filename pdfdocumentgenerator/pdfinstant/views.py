@@ -1,9 +1,10 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.template import loader
 from django.http import HttpResponse
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
-from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
 
 
 def index(request):
@@ -54,8 +55,33 @@ def createaccount(request):
             return render(request, 'pdfinstant/signup.html', error_message_context)
 
         userpassword_secure = make_password(userpassword)
-        new_user = User(username=useremail, email=useremail, password=userpassword_secure)
-        new_user.save()
+        create_new_account = User(username=useremail, email=useremail, password=userpassword_secure)
+        create_new_account.save()
         return redirect('signin')
 
     return render(request, 'pdfinstant/signup.html', error_message_context)
+
+
+
+def signinaccount(request):
+    error_message_context = {'alert': False, 'message': ''}
+
+    if request.method == 'POST':
+        useremail = request.POST.get('useremail')
+        userpassword = request.POST.get('userpassword')
+        user = authenticate(request, username=useremail, password=userpassword)
+
+        if user is not None:
+            login(request, user)
+            return redirect('homepage')
+        else:
+            error_message_context['alert'] = True
+            error_message_context['message'] = 'Incorrect sign in details have been provided'
+            return render(request, 'pdfinstant/signin.html', error_message_context)
+
+    return render(request, 'pdfinstant/signin.html', error_message_context)
+
+@login_required
+def signout(request):
+    logout(request)
+    return redirect('signin') 

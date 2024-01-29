@@ -1,5 +1,5 @@
 from django.urls import path
-
+from django.contrib.auth import views as auth_views
 from . import views
 
 urlpatterns = [
@@ -12,5 +12,10 @@ urlpatterns = [
     path(route="signin", view=views.signin, name="signin"),
     path(route="signup", view=views.signup, name="signup"),
 
-    path(route="createaccount", view=views.createaccount, name="createaccount")
+    path(route="createaccount", view=views.createaccount, name="createaccount"),
+
+    path(route="signinaccount", view=views.signinaccount, name="signinaccount"),
+
+    path(route="signout", view=views.signout, name="signout")
+
 ]

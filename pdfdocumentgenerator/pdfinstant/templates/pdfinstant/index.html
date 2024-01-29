@@ -13,9 +13,14 @@
                 <li><a href="/homepage" {% if request.path == '/homepage' %}class="current"{% endif %}>Homepage</a></li>
                 <li><a href="/aboutpage" {% if request.path == '/aboutpage' %}class="current"{% endif %}>About Us</a></li>
                 <li><a href="/generatepdfs" {% if request.path == '/generatepdfs' %}class="current"{% endif %}>Generate PDFs</a></li>
-                <li><a href="/signin" {% if request.path == '/signin' %}class="current"{% endif %}>Sign In</a></li>
                 
+                {% if user.is_authenticated %}
+                    <li><a href="/signout" {% if request.path == '/signout' %}class="current"{% endif %}>Sign Out</a></li>
+                {% else %}
+                    <li><a href="/signin" {% if request.path == '/signin' %}class="current"{% endif %}>Sign In</a></li>
+                {% endif %}
             </ul>
+            
         </nav>
         <label for="hamburgernav" class="responsivenav">
             <div></div>

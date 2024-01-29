@@ -9,25 +9,40 @@
     <title>PDFInstant - Home</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'pdfinstant/signin.css' %}">
+    <script type="text/javascript" src="{% static 'pdfinstant/signup.js' %}"></script>
 </head>
 
 <body>
-    <div class="responsive-box">
-    <div class="accountform-container">
-        <div class="accountform-group">
-          <label for="email"><h4>E-Mail:</h4></label>
-          <input type="email" id="email" name="email">
-        </div>
-        <div class="accountform-group">
-          <label for="password"><h4>Password:</h4></label>
-          <input type="password" id="password" name="password">
-        </div>
-        <div class="browse-button responsive-box">
-            <h4>Sign In</h4>
-        </div>
+{% if alert %}
+    <div class="error-message-popup">
+        {{ message }}
     </div>
-      
-    </div>
+{% endif %}
+<form name="login" method="post" action="{% url 'signinaccount' %}">
+  {% csrf_token %}
+  <div class="responsive-box">
+      <div class="accountform-container">
+        {% if alert %}
+        <center>
+            <script
+              type="text/javascript">
+              showAlert("{{ message }}");
+            </script>
+          </center>
+        {% endif %}
+          <div class="accountform-group">
+              <label for="email"><h4>E-Mail:</h4></label>
+              <input type="email" name="useremail" required> 
+          </div>
+          <div class="accountform-group">
+              <label for="password"><h4>Password:</h4></label>
+              <input type="password" name="userpassword" required>
+          </div>
+          <input type="submit" value="Sign in" class="browse-button responsive-box">
+      </div>
+  </div>
+</form>
+
     <script
     type="text/javascript"
     src="{% static 'pdfinstant/run.js' %}"
