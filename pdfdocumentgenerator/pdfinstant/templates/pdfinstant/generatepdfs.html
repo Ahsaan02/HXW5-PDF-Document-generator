@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PDFInstant - Home</title>
     {% load static %}
-    <link rel="stylesheet" href="{% static 'pdfinstant/main.css' %}">
+    <link rel="stylesheet" href="{% static 'pdfinstant/generatepdfs.css' %}">
 </head>
 <body>
     <div class="responsive-box">
@@ -15,12 +15,8 @@
     </div>
 
     <div class="button-container">
-    <div class="sign-up responsive-box">
-        <h5>Sign Up</h5>
-    </div>
-    <div class="sign-in responsive-box">
-        <h5>Sign In</h5>
-    </div>
+    <a href="/signup" class="sign-up responsive-box">Sign Up</a>
+    <a href="/signin" class="sign-in responsive-box">Sign In</a>
 </div>
     <script
     type="text/javascript"

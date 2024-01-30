@@ -24,6 +24,7 @@ def generatepdfs(request):
     page = loader.get_template("pdfinstant/generatepdfs.html")
     return HttpResponse(page.render(request=request))
 
+@login_required
 def generatepdfsin(request):
     page = loader.get_template("pdfinstant/generatepdfsin.html")
     return HttpResponse(page.render(request=request))
