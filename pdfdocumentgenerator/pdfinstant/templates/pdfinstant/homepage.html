@@ -1,29 +1,20 @@
 {% extends 'pdfinstant/index.html' %}
+
+{% load static %}
+
+{% block title %}
+PDFInstant - Home
+{% endblock title %}
+
 {% block content %}
-
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PDFInstant - Home</title>
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'pdfinstant/homepage.css' %}">
-</head>
-<body>
-
+<link rel="stylesheet" href="{% static 'pdfinstant/homepage.css' %}">
+<title>PDFInstant - Homepage</title>
+    
+<div class="box-container">
     <div class="responsive-box">
-        <h2>PDFInstant</h2>
-        <p>A CSV to PDF converter and Document generator</p>
-    </div>
-    <a href="/signin" class="get-started responsive-box">Get Started</a>
-
-    <script
-    type="text/javascript"
-    src="{% static 'pdfinstant/run.js' %}"
-    ></script>
-</body>
-</html>
-
+    <h2>PDFInstant</h2>
+    <p>A CSV to PDF converter and Document generator</p>
+</div>
+<a href="/signin" class=" get-started responsive-box">Get Started</a> 
+</div>
 {% endblock content %}

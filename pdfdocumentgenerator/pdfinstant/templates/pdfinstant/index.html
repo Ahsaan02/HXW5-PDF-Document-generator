@@ -1,45 +1,48 @@
 {% load static %}
 
+
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <link rel="stylesheet" href="{% static 'pdfinstant/nav.css' %}">
-</head>
-<body>
-    <header>
-        <input type="checkbox" id="hamburgernav" hidden>
-        <nav>
-            <ul>
-                <li><a href="/homepage" {% if request.path == '/homepage' %}class="current"{% endif %}>Homepage</a></li>
-                <li><a href="/aboutpage" {% if request.path == '/aboutpage' %}class="current"{% endif %}>About Us</a></li>
-                
-                {% if user.is_authenticated %}
+    <head>
+        <link rel="stylesheet" href="{% static 'pdfinstant/nav.css' %}">
+    </head>
+    <body>
+        <header>
+            <input type="checkbox" id="hamburgernav" hidden>
+            <nav>
+                <ul>
+                    <li><a href="/homepage" {% if request.path == '/homepage' %}class="current"{% endif %}>Homepage</a></li>
+                    <li><a href="/aboutpage" {% if request.path == '/aboutpage' %}class="current"{% endif %}>About Us</a></li>
+                    
+                    {% if user.is_authenticated %}
                     <li><a href="/generatepdfsin" {% if request.path == '/generatepdfsin' %}class="current"{% endif %}>Generate PDFs</a></li>
-                {% else %}
+                    {% else %}
                     <li><a href="/generatepdfs" {% if request.path == '/generatepdfs' %}class="current"{% endif %}>Generate PDFs</a></li>
-                {% endif %}
-            
-                {% if user.is_authenticated %}
+                    {% endif %}
+                    
+                    {% if user.is_authenticated %}
                     <li><a href="/signout" {% if request.path == '/signout' %}class="current"{% endif %}>Sign Out</a></li>
-                {% else %}
+                    {% else %}
                     <li><a href="/signin" {% if request.path == '/signin' %}class="current"{% endif %}>Sign In</a></li>
-                {% endif %}
-            </ul>
-            
-            
-        </nav>
-        <label for="hamburgernav" class="responsivenav">
-            <div></div>
-            <div></div>
-            <div></div>
-        </label>
+                    {% endif %}
+                </ul>
+                
+                
+            </nav>
+            <label for="hamburgernav" class="responsivenav">
+                <div></div>
+                <div></div>
+                <div></div>
+            </label>
+        </header>
+        
+        <div id="pages">
+            {% block content %}
+            {% endblock content %}
+        </div>
         <script
         type="text/javascript"
         src="{% static 'pdfinstant/nav.js' %}"
         ></script>
-    </header>
-
-    {% block content %}
-    {% endblock content %}
-</body>
+    </body>
 </html>

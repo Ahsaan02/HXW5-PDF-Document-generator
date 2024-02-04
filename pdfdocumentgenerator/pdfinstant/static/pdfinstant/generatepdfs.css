@@ -2,53 +2,38 @@ p,h1,h2,h3,h4,h5 {
     font-family: Arial, Helvetica, sans-serif;
 }
 .button-container{
-
+    display:flex;
+    margin-top:5%;
+    gap:180px;
 }
 
 .responsive-box {
-    background-color: #d6d4d4;
-    border: 4px solid #000000;
+    border-radius: 8px;
+    display: flex;
+    align-items: center; 
+    justify-content: center; 
     min-width:500px;
     min-height:180px;
     max-width:600px;
-    border-radius: 8px;
-    left: 50%;
-    position: absolute;
-    top: 30%;
-    display:flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    -ms-transform: translate(-50%, -50%);
-    transform: translate(-50%, -50%);
+    margin:0 auto;
+    background-color: #d6d4d4;
+    border: 4px solid #000000;
+    margin-top:10%;
 }
 
 .sign-up.responsive-box{
-    text-decoration: none;
-    background-size: cover;
-    box-sizing: border-box;
-    top:44%;
-    left:42%;
+    margin:0 auto;
+    margin-top: -2%;
     min-width:150px;
     min-height:fit-content;
     width:fit-content;
     border: 2px solid #000000; 
-    transition: all 0.6s ease; 
+    transition: background-color 0.6s ease, color 0.6s ease, border-color 0.6s ease;
     cursor: pointer;
 
 }
-.sign-in.responsive-box{
-    text-decoration: none;
-    background-size: cover;
-    box-sizing: border-box;
-    top:44%;
-    left:58%;
-    min-width:150px;
-    min-height:fit-content;
-    width:fit-content;
-    border: 2px solid #000000; 
-    transition: all 0.6s ease; 
-    cursor: pointer;
+.sign-in.sign-up.responsive-box{
+    margin-left:-32%;
 
 }
 .sign-in:hover, .sign-up:hover {
@@ -59,24 +44,21 @@ p,h1,h2,h3,h4,h5 {
 
 
 
-@media screen and (max-width: 1299px) {
+@media screen and (max-width: 799px) {
     .responsive-box {
+        margin-top:30%;
+        min-height:100px;
+        max-width: 80%;
+        max-height:150px;
         min-width:fit-content;
-        max-width: 40%;
-        justify-content: center; 
-        left:50%;
-    }
-    .sign-in.responsive-box{
-        top:45%;
-        min-width:70px; 
-        max-width:70px;
-        left:62%;
+        justify-content: center;
+        justify-items: center;
     }
     .sign-up.responsive-box{
-        top:45%;
-        min-width:70px; 
-        max-width:70px;
-        left:37%;
+        min-width:100px; 
+        min-height:30px;
+        max-height:50px;
+        margin-top:5%;
     }
 }
 

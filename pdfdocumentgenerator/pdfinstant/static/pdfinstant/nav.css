@@ -54,7 +54,8 @@ header nav a.current {
     }
     
     header nav {
-        position: absolute;
+        position: relative;
+        position:absolute;
         top: 60px;
         left: -100%;
         width: 100%; 

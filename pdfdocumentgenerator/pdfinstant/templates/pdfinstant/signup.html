@@ -1,57 +1,49 @@
 {% extends 'pdfinstant/index.html' %}
+
+{% load static %}
+
+{% block title %}
+PDFInstant - Sign Up
+{% endblock title %}
+
 {% block content %}
+<link rel="stylesheet" href="{% static 'pdfinstant/signin.css' %}">
+<title>PDFInstant - Sign Up</title>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PDFInstant - Home</title>
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'pdfinstant/signin.css' %}">
-    <script type="text/javascript" src="{% static 'pdfinstant/signup.js' %}"></script>
+{% if alert %}
+    <div class="error-message-popup">
+        {{ message }}
+    </div>
+{% endif %}
 
-</head>
-
-<body>
-  {% if alert %}
-      <div class="error-message-popup">
-          {{ message }}
-      </div>
-  {% endif %}
-  <form name="register" method="post" action="{% url 'createaccount' %}">
-      {% csrf_token %}
-      <div class="responsive-box">
-          <div class="accountform-container">
-              {% if alert %}
-              <center>
-                  <script
-                    type="text/javascript">
+<form name="register" method="post" action="{% url 'createaccount' %}">
+    {% csrf_token %}
+    <div class="sign-up responsive-box">
+        <div class="accountform-container">
+            {% if alert %}
+            <center>
+                <script type="text/javascript">
                     showAlert("{{ message }}");
-                  </script>
-                </center>
-              {% endif %}
-              <div class="accountform-group">
-                  <label for="email"><h4>E-Mail:</h4></label>
-                  <input type="email" name="useremail" required>
-              </div>
-              <div class="accountform-group">
-                  <label for="password"><h4>Password:</h4></label>
-                  <input type="password" name="userpassword" required>
-              </div>
-              <div class="accountform-group">
-                  <label for="password"><h4>Confirm Password:</h4></label>
-                  <input type="password" name="userconfirmpassword" required>
-              </div>
-              <input type="submit" value="Create Account" class="browse-button responsive-box">
-          </div>
-      </div>
-  </form>
-    <script
-    type="text/javascript"
-    src="{% static 'pdfinstant/run.js' %}"
-    ></script>
-</body>
-</html>
+                </script>
+            </center>
+            {% endif %}
+            <div class="accountform-group">
+                <label for="email"><h4>E-Mail:</h4></label>
+                <input type="email" name="useremail" required>
+            </div>
+            <div class="accountform-group">
+                <label for="password"><h4>Password:</h4></label>
+                <input type="password" name="userpassword" required>
+            </div>
+            <div class="accountform-group">
+                <label for="password"><h4>Confirm Password:</h4></label>
+                <input type="password" name="userconfirmpassword" required>
+            </div>
+            <input type="submit" value="Create Account" class="sign-up-button browse-button responsive-box">
+        </div>
+    </div>
+</form>
 
+<script type="text/javascript" src="{% static 'pdfinstant/signup.js' %}"></script>
+<script type="text/javascript" src="{% static 'pdfinstant/run.js' %}"></script>
 {% endblock content %}

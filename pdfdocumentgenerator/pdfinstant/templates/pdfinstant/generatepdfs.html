@@ -1,27 +1,22 @@
 {% extends 'pdfinstant/index.html' %}
+
+{% load static %}
+
+{% block title %}
+PDFInstant - Generate PDFs
+{% endblock title %}
+
 {% block content %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PDFInstant - Home</title>
-    {% load static %}
     <link rel="stylesheet" href="{% static 'pdfinstant/generatepdfs.css' %}">
-</head>
-<body>
+    <title>PDFInstant - Generate PDFs</title>
+
     <div class="responsive-box">
         <h3>Sign-In to access PDF Generation</h3>
     </div>
 
     <div class="button-container">
-    <a href="/signup" class="sign-up responsive-box">Sign Up</a>
-    <a href="/signin" class="sign-in responsive-box">Sign In</a>
-</div>
-    <script
-    type="text/javascript"
-    src="{% static 'pdfinstant/run.js' %}"
-    ></script>
-</body>
-</html>
+        <a href="/signup" class="sign-up responsive-box">Sign Up</a>
+        <a href="/signin" class=" sign-in sign-up responsive-box">Sign In</a>
+    </div>
+    <script type="text/javascript" src="{% static 'pdfinstant/run.js' %}"></script>
 {% endblock content %}

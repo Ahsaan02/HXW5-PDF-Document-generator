@@ -2,54 +2,37 @@ p,h1,h2,h3,h4,h5 {
     font-family: Arial, Helvetica, sans-serif;
 }
 .button-container{
-
-}
+    display: grid;
+    gap: 5%;
+  }
 
 .responsive-box {
+    max-width: 50%;
+    min-height: 50px;
+    margin:0 auto;
     background-color: #d6d4d4;
     border: 4px solid #000000;
-    min-width:500px;
-    min-height:180px;
-    max-width:600px;
-    border-radius: 8px;
-    left: 50%;
-    position: absolute;
-    top: 30%;
-    display:flex;
-    justify-content: center;
     align-items: center;
     text-align: center;
-    -ms-transform: translate(-50%, -50%);
-    transform: translate(-50%, -50%);
+    display:inline-grid;
+    margin-top:10%;
 }
 
 .browse-button.responsive-box{
-    text-decoration: none;
-    background-size: cover;
-    box-sizing: border-box;
-    top:44%;
-    left:50%;
-    min-width:300px;
-    min-height:35px;
-    /* min-height:fit-content; */
-    width:fit-content;
-
+    max-width:fit-content;
+    max-height: fit-content;
+    min-width:90px; 
+    max-width:120px;
+    margin-top: 0;
 }
 
 
 
-@media screen and (max-width: 1299px) {
+@media screen and (max-width: 2000px) {
     .responsive-box {
-        min-width:fit-content;
-        max-width: 30%;
-        justify-content: center; 
-        left:50%;
+        margin-top: 30%;
     }
-    .browse-button.responsive-box{
-        top:45%;
-        min-width:90px; 
-        max-width:120px;
-    }
+
 }
 
 

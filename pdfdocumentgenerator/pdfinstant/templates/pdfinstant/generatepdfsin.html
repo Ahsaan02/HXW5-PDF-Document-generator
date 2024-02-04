@@ -1,15 +1,17 @@
 {% extends 'pdfinstant/index.html' %}
+
+{% load static %}
+
+{% block title %}
+PDFInstant - Generate PDFs
+{% endblock title %}
+
 {% block content %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PDFInstant - Home</title>
-    {% load static %}
     <link rel="stylesheet" href="{% static 'pdfinstant/generatepdfsin.css' %}">
-</head>
-<body>
+    <title>PDFInstant - Generate PDFs</title>
+
+    <div class="button-container">
+
     <div class="responsive-box">
         <h3>Drag & Drop/Import CSV file</h3>
     </div>
@@ -17,11 +19,5 @@
         <h5>Browse CSV files on your Computer</h5>
     </div>
 </div>
-
-    <script
-    type="text/javascript"
-    src="{% static 'pdfinstant/run.js' %}"
-    ></script>
-</body>
-</html>
+    <script type="text/javascript" src="{% static 'pdfinstant/run.js' %}"></script>
 {% endblock content %}
