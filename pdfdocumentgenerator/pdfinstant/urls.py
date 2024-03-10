@@ -16,6 +16,8 @@ urlpatterns = [
 
     path(route="signinaccount", view=views.signinaccount, name="signinaccount"),
 
-    path(route="signout", view=views.signout, name="signout")
+    path(route="signout", view=views.signout, name="signout"),
+
+    path(route="upload/", view=views.upload_csv, name="upload_csv")
 
 ]

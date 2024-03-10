@@ -1,3 +1,5 @@
+import csv
+from io import StringIO
 from django.shortcuts import render, redirect
 from django.template import loader
 from django.http import HttpResponse
@@ -5,7 +7,31 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
+from .forms import CSVUploadForm
 
+@csrf_exempt
+def upload_csv(request):
+    if request.method == 'POST':
+        form = CSVUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            csv_file = request.FILES['file']
+            dataset = csv_file.read().decode('UTF-8')
+            processed_csv_data = parse_csv(dataset)
+            request.session['csv_data'] = processed_csv_data
+            return redirect('generatepdfsin')
+    else:
+        form = CSVUploadForm()
+    return render(request, 'csv_upload.html', {'form': form})
+
+def parse_csv(csv_content):
+    csv_data = []
+    f = StringIO(csv_content)
+    reader = csv.DictReader(f)
+    for row in reader:
+        cleaned_row = {key.lstrip('\ufeff').replace(' ', '_').strip(): value for key, value in row.items()}
+        csv_data.append(cleaned_row)
+    return csv_data
 
 def index(request):
     page = loader.get_template("pdfinstant/index.html")
