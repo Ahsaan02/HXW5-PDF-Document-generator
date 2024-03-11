@@ -9,6 +9,27 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from .forms import CSVUploadForm
+from django.urls import reverse
+
+
+def process_csv(request):
+    if request.method == 'POST':
+        selected_template = request.POST.get('template')
+        csv_content = request.session.get('csv_data')
+
+        if not csv_content or not selected_template:
+            return redirect('upload_csv')
+
+        csv_data = parse_csv(csv_content)
+    else:
+        return redirect(reverse('upload_csv'))
+
+
+@login_required
+def template_choices(request):
+    page = loader.get_template("pdfinstant/template_choices.html")
+    return HttpResponse(page.render(request=request))
+
 
 @csrf_exempt
 def upload_csv(request):
@@ -19,7 +40,7 @@ def upload_csv(request):
             dataset = csv_file.read().decode('UTF-8')
             processed_csv_data = parse_csv(dataset)
             request.session['csv_data'] = processed_csv_data
-            return redirect('generatepdfsin')
+            return redirect('template_choices')
     else:
         form = CSVUploadForm()
     return render(request, 'csv_upload.html', {'form': form})

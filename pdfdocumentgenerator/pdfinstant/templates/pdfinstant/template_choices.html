@@ -1,0 +1,25 @@
+{% extends 'pdfinstant/index.html' %}
+
+{% load static %}
+
+{% block title %}PDFInstant - Choose Template{% endblock title %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'pdfinstant/template_selection.css' %}">
+
+<div class="button-container">
+    <h2>Template Choices:</h2>
+        <div class="template-grid">
+            <label for="template1" class="responsive-box">
+                <input type="radio" name="template" id="template1" value="template1">
+                <p>Coursework Feedback Template</p>
+            </label>
+            
+        </div>
+
+        <div class="submit-btn-container">
+            <button type="button" class="submit-btn" id="generatePdfBtn">Generate PDF</button>
+        </div>
+    </form>
+</div>
+{% endblock content %}

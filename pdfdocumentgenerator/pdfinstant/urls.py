@@ -18,6 +18,8 @@ urlpatterns = [
 
     path(route="signout", view=views.signout, name="signout"),
 
-    path(route="upload/", view=views.upload_csv, name="upload_csv")
+    path(route="upload/", view=views.upload_csv, name="upload_csv"),
+    path(route="template-choices/", view=views.template_choices, name="template_choices")
+    
 
 ]
