@@ -9,14 +9,25 @@
 
 <div class="button-container">
     <h2>Template Choices:</h2>
+        <form action="{% url 'process_csv' %}" method="post">
+        {% csrf_token %}
         <div class="template-grid">
             <label for="template1" class="responsive-box">
                 <input type="radio" name="template" id="template1" value="template1">
                 <p>Coursework Feedback Template</p>
             </label>
             
-        </div>
+            <label for="template2" class="responsive-box">
+                <input type="radio" name="template" id="template2" value="template2">
+                <p>Receipt Template</p>
+            </label>
 
+            <label for="template3" class="responsive-box">
+                <input type="radio" name="template" id="template3" value="template3">
+                <p>Business Letter Template</p>
+            </label>
+        </div>
+        
         <div class="submit-btn-container">
             <button type="button" class="submit-btn" id="generatePdfBtn">Generate PDF</button>
         </div>
