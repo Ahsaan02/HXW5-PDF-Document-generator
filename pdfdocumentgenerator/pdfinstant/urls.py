@@ -15,11 +15,13 @@ urlpatterns = [
     path(route="createaccount", view=views.createaccount, name="createaccount"),
 
     path(route="signinaccount", view=views.signinaccount, name="signinaccount"),
-
+    
     path(route="signout", view=views.signout, name="signout"),
 
     path(route="upload/", view=views.upload_csv, name="upload_csv"),
-    path(route="template-choices/", view=views.template_choices, name="template_choices")
+
+    path(route="template-choices/", view=views.template_choices, name="template_choices"),
     
+    path(route="process-csv/", view=views.process_csv, name="process_csv")
 
 ]
