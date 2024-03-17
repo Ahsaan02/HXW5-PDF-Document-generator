@@ -10,7 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from .forms import CSVUploadForm
 from django.urls import reverse
-
+from collections import defaultdict
 
 def process_csv(request):
     if request.method == 'POST':
@@ -21,8 +21,26 @@ def process_csv(request):
             return redirect('upload_csv')
 
         csv_data = parse_csv(csv_content)
+        pdf_files = handle_template1(csv_data)
+        pdf_files=[]
+
+
     else:
         return redirect(reverse('upload_csv'))
+    
+def handle_template1(csv_data):
+    grouped_data = defaultdict(list)
+    for row in csv_data:
+        student_id = row.get('student_id')
+        grouped_data[student_id].append(row)
+
+    pdf_files = []
+    for student_id, items in grouped_data.items():
+        pdf_content = cwf_template_1(items)
+        filename = f"{student_id}_coursework_feedback.pdf"
+        pdf_files.append((filename, pdf_content))
+
+    return pdf_files
 
 
 @login_required
