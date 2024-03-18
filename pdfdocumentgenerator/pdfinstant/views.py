@@ -11,20 +11,25 @@ from django.views.decorators.csrf import csrf_exempt
 from .forms import CSVUploadForm
 from django.urls import reverse
 from collections import defaultdict
+from io import BytesIO
+from reportlab.platypus import SimpleDocTemplate
+from reportlab.lib.pagesizes import letter
+from reportlab.lib.styles import getSampleStyleSheet
 
+@login_required
 def process_csv(request):
     if request.method == 'POST':
         selected_template = request.POST.get('template')
         csv_content = request.session.get('csv_data')
-
         if not csv_content or not selected_template:
             return redirect('upload_csv')
-
         csv_data = parse_csv(csv_content)
-        pdf_files = handle_template1(csv_data)
-        pdf_files=[]
-
-
+        if selected_template == 'template1':
+            pdf_content = handle_template1(csv_data)
+            response = HttpResponse(content_type='application/pdf')
+            response['Content-Disposition'] = 'attachment; filename="generated_pdf.pdf"'
+            response.write(pdf_content)
+            return response
     else:
         return redirect(reverse('upload_csv'))
     
@@ -41,6 +46,14 @@ def handle_template1(csv_data):
         pdf_files.append((filename, pdf_content))
 
     return pdf_files
+
+def cwf_template_1(items):
+    buffer = BytesIO()
+    pdf = SimpleDocTemplate(buffer, pagesize=letter)
+    styles = getSampleStyleSheet()
+    elements = []
+    pdf.build(elements)
+    return buffer.getvalue()
 
 
 @login_required
