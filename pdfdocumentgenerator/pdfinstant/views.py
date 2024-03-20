@@ -12,7 +12,8 @@ from .forms import CSVUploadForm
 from django.urls import reverse
 from collections import defaultdict
 from io import BytesIO
-from reportlab.platypus import SimpleDocTemplate
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import getSampleStyleSheet
 
@@ -51,9 +52,71 @@ def cwf_template_1(items):
     buffer = BytesIO()
     pdf = SimpleDocTemplate(buffer, pagesize=letter)
     styles = getSampleStyleSheet()
+    heading4_style = styles['Heading4']
     elements = []
+
+    if items:
+        student_name = items[0].get('student_name', 'Unnamed Student')
+        student_id = items[0].get('student_id', 'Unknown ID')
+
+        
+
+        elements.append(Paragraph(f'{student_name} Coursework Feedback', styles['Title']))
+        elements.append(Spacer(12, 12))
+        student_details_data = [[Paragraph(f'Student Name: {student_name}', heading4_style),
+                                 Spacer(100,0),
+                                 Paragraph(f'Student ID: {student_id}', heading4_style)]]
+        student_details_table = Table(student_details_data)
+        student_details_table.setStyle(TableStyle([
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+        ]))
+        elements.append(student_details_table)
+        elements.append(Spacer(1, 12))
+        elements.append(Spacer(1, 12))
+
+    table_data = [['Item No', 'Requirements', 'Marks Available', 'Your Mark', 'Comments']]
+    
+    
+    for item in items:
+        item_data = [
+            Paragraph(item.get('item_no', ''), styles['Normal']),
+            Paragraph(item.get('requirements', ''), styles['Normal']),
+            Paragraph(item.get('marks_available', ''), styles['Normal']),
+            Paragraph(item.get('your_mark', ''), styles['Normal']),
+            Paragraph(item.get('comments', ''), styles['Normal']),
+        ]
+        table_data.append(item_data)
+
+    col_widths = [None, None, 80, 80, 120]
+
+    table = Table(table_data, colWidths=col_widths)
+
+    table.setStyle(TableStyle([
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('BACKGROUND', (0, 0), (-1, 0), colors.white),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+        ('LEFTPADDING', (0, 0), (-1, -1), 3),
+        ('RIGHTPADDING', (0, 0), (-1, -1), 3),
+        ('TOPPADDING', (0, 0), (-1, -1), 3),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
+    ]))
+
+    elements.append(table)
+    additional_comments = items[0].get('additional_comments', 'No additional comments provided.')
+    elements.append(Paragraph("Additional Comments:", styles['Heading4']))
+    elements.append(Spacer(1, 6))
+    elements.append(Paragraph(additional_comments, styles['Normal']))
+
+
     pdf.build(elements)
-    return buffer.getvalue()
+    buffer.seek(0)
+    pdf_data = buffer.getvalue()
+    buffer.close()
+
+    return pdf_data
 
 
 @login_required
@@ -69,8 +132,7 @@ def upload_csv(request):
         if form.is_valid():
             csv_file = request.FILES['file']
             dataset = csv_file.read().decode('UTF-8')
-            processed_csv_data = parse_csv(dataset)
-            request.session['csv_data'] = processed_csv_data
+            request.session['csv_data'] = dataset
             return redirect('template_choices')
     else:
         form = CSVUploadForm()
