@@ -239,7 +239,50 @@ def receipt_template(customer_id, items):
 
     elements.append(ListFlowable([ListItem(payment_method_table, leftIndent=0)], bulletType='bullet'))
 
+def business_letter_template(csv_row):
+    buffer = BytesIO()
+    pdf = SimpleDocTemplate(buffer, pagesize=letter)
+    styles = getSampleStyleSheet()
 
+    elements = []
+
+    elements.append(Paragraph(csv_row['SenderName'], styles['Normal']))
+    elements.append(Paragraph(csv_row['SenderAddress'], styles['Normal']))
+    elements.append(Paragraph(csv_row['SenderCityZip'], styles['Normal']))
+    elements.append(Spacer(1, 12))
+
+    elements.append(Paragraph(csv_row['TodayDate'], styles['Normal']))
+    elements.append(Spacer(1, 12))
+
+    elements.append(Paragraph(csv_row['RecipientName'], styles['Normal']))
+    elements.append(Paragraph(csv_row['RecipientTitle'], styles['Normal']))
+    elements.append(Paragraph(csv_row['RecipientCompany'], styles['Normal']))
+    elements.append(Paragraph(csv_row['RecipientAddress'], styles['Normal']))
+    elements.append(Paragraph(csv_row['RecipientCityZip'], styles['Normal']))
+    elements.append(Spacer(1, 30))
+
+    elements.append(Paragraph(f"Dear {csv_row['RecipientName']},", styles['Normal']))
+    elements.append(Spacer(1, 30))
+
+    elements.append(Paragraph(csv_row['Introduction'], styles['Normal']))
+    elements.append(Paragraph(csv_row['Body'], styles['Normal']))
+    elements.append(Spacer(1, 30))
+
+    elements.append(Paragraph(csv_row['Closing'], styles['Normal']))
+    elements.append(Spacer(1, 30))
+
+    elements.append(Paragraph("Sincerely,", styles['Normal']))
+    elements.append(Spacer(1, 20))
+    elements.append(Paragraph(csv_row['SenderName'], styles['Normal']))
+    if 'SenderTitle' in csv_row:
+        elements.append(Paragraph(csv_row['SenderTitle'], styles['Normal']))
+
+    pdf.build(elements)
+    buffer.seek(0)
+    pdf_data = buffer.getvalue()
+    buffer.close()
+
+    return pdf_data
 
 
 
