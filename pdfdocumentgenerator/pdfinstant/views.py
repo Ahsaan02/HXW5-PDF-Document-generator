@@ -1,88 +1,100 @@
-import csv
-from io import StringIO
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from django.template import loader
 from django.http import HttpResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.decorators import login_required
-from django.views.decorators.csrf import csrf_exempt
 from .forms import CSVUploadForm
-from django.urls import reverse
-from collections import defaultdict
-from io import BytesIO
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, ListFlowable, ListItem
-from reportlab.lib import colors
+import csv
 from reportlab.lib.pagesizes import letter
+from reportlab.lib import colors
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, ListFlowable, ListItem
 from reportlab.lib.styles import getSampleStyleSheet
+from io import BytesIO
+import zipfile
+from django.urls import reverse
+from io import StringIO
+from collections import defaultdict
+from django.core.mail import EmailMessage
+from django.conf import settings
+from .models import ZipFile
 
-@login_required
+
+def send_test_email(subject, body, recipient_email, pdf_content, custom_filename):
+    email = EmailMessage(
+        subject=subject,
+        body=body,
+        from_email=settings.EMAIL_HOST_USER,
+        to=[recipient_email]
+    )
+    email.attach(custom_filename, pdf_content, 'application/pdf')
+    email.send()
+
+
+
+
+def upload_csv(request):
+    if request.method == 'POST':
+        form = CSVUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            csv_file = request.FILES['file']
+            dataset = csv_file.read().decode('UTF-8')
+            request.session['csv_data'] = dataset 
+            return redirect(reverse('template_choices'))
+    else:
+        form = CSVUploadForm()
+    return render(request, 'csv_upload.html', {'form': form})
+
+
 def process_csv(request):
     if request.method == 'POST':
         selected_template = request.POST.get('template')
+        action = request.POST.get('action', 'downloadZip')
         csv_content = request.session.get('csv_data')
+
         if not csv_content or not selected_template:
             return redirect('upload_csv')
+
         csv_data = parse_csv(csv_content)
+
+        pdf_files = []
+        email_subject = ""
+        email_body = ""
+
         if selected_template == 'template1':
             pdf_files = handle_template1(csv_data)
             template_type = 'coursework_feedback'
+            email_subject = "Your Coursework Feedback"
+            email_body = "Here is your coursework feedback. Please review it carefully."
         elif selected_template == 'template2':
             pdf_files = handle_template2(csv_data)
             template_type = 'receipt'
+            email_subject = "Your Receipt"
+            email_body = "Attached is your receipt. Thank you for your business."
         elif selected_template == 'template3':
             pdf_files = handle_template3(csv_data)
             template_type = 'business_letter'
+            email_subject = "Business Letter"
+            email_body = "Please find the attached business letter. We look forward to your response."
 
+        if action == 'emailPdfs':
+            for filename, pdf_content, recipient_email in pdf_files:
+                custom_filename = filename
+                send_test_email(
+                    email_subject,
+                    email_body,
+                    recipient_email,
+                    pdf_content,
+                    custom_filename
+                )
+            return HttpResponse("Emails sent successfully.")
+        else:
+            return generate_zip(request, pdf_files, template_type)
 
-            response = HttpResponse(content_type='application/pdf')
-            response['Content-Disposition'] = 'attachment; filename="generated_pdf.pdf"'
-            response.write(pdf_files, template_type)
-            return response
     else:
         return redirect(reverse('upload_csv'))
-    
-def handle_template1(csv_data):
-    grouped_data = defaultdict(list)
-    for row in csv_data:
-        student_id = row.get('student_id')
-        grouped_data[student_id].append(row)
 
-    pdf_files = []
-    for student_id, items in grouped_data.items():
-        pdf_content = cwf_template_1(items)
-        filename = f"{student_id}_coursework_feedback.pdf"
-        pdf_files.append((filename, pdf_content))
-
-    return pdf_files
-
-
-def handle_template2(csv_data):
-    grouped_data = defaultdict(list)
-    for row in csv_data:
-        customer_id = row['Customer ID']
-        grouped_data[customer_id].append(row)
-
-    pdf_files = []
-    for customer_id, items in grouped_data.items():
-        pdf_content = receipt_template(customer_id, items)
-        filename = f"{customer_id}_receipt.pdf"
-        pdf_files.append((filename, pdf_content))
-
-    return pdf_files
-
-
-def handle_template3(csv_data):
-    pdf_files = []
-    for row in csv_data:
-
-        pdf_content = business_letter_template(row)
-        
-        filename = f"business_letter_to_{recipient_email}.pdf"
-        pdf_files.append((filename, pdf_content))
-
-    return pdf_files
 
 def cwf_template_1(items):
     buffer = BytesIO()
@@ -154,7 +166,92 @@ def cwf_template_1(items):
 
     return pdf_data
 
-def receipt_template(customer_id, items):
+def handle_template1(csv_data):
+    grouped_data = defaultdict(list)
+    for row in csv_data:
+        student_id = row.get('student_id')
+        grouped_data[student_id].append(row)
+
+    pdf_files = []
+    for student_id, items in grouped_data.items():
+        recipient_email = items[0].get('email')
+        pdf_content = cwf_template_1(items)
+        filename = f"{student_id}_coursework_feedback.pdf"
+        pdf_files.append((filename, pdf_content, recipient_email))
+
+    return pdf_files
+
+
+def handle_template2(csv_data):
+    grouped_data = defaultdict(list)
+    for row in csv_data:
+        customer_id = row['Customer ID']
+        grouped_data[customer_id].append(row)
+
+    pdf_files = []
+    for customer_id, items in grouped_data.items():
+        recipient_email = items[0].get('email')
+        pdf_content = receipt_template_2(customer_id, items)
+        filename = f"{customer_id}_receipt.pdf"
+        pdf_files.append((filename, pdf_content, recipient_email))
+
+    return pdf_files
+
+
+def handle_template3(csv_data):
+    pdf_files = []
+    for row in csv_data:
+        recipient_email = row.get('email', 'Unknown')
+
+        pdf_content = business_letter_template(row)
+        
+        filename = f"business_letter_to_{recipient_email}.pdf"
+        pdf_files.append((filename, pdf_content, recipient_email))
+
+    return pdf_files
+
+
+def generate_zip(request, pdf_files, template_type):
+    zip_buffer = BytesIO()
+    with zipfile.ZipFile(zip_buffer, 'a', zipfile.ZIP_DEFLATED) as zip_file:
+        for filename, pdf_content, _ in pdf_files: 
+            zip_file.writestr(filename, pdf_content)
+
+    zip_filename = "download.zip"
+    if template_type == 'coursework_feedback':
+        zip_filename = "coursework_feedback_reports.zip"
+    elif template_type == 'receipt':
+        zip_filename = "receipts.zip"
+    elif template_type == 'business_letter':
+        zip_filename = "business_letters.zip"
+
+    
+    ZipFile.objects.create(
+        user=request.user,
+        file_name=zip_filename,
+        file_content=zip_buffer.getvalue()
+    )
+
+
+    zip_buffer.seek(0)
+    response = HttpResponse(zip_buffer.getvalue(), content_type='application/zip')
+    response['Content-Disposition'] = f'attachment; filename="{zip_filename}"'
+    zip_buffer.close()
+    return response
+
+
+def parse_csv(csv_content):
+    csv_data = []
+    f = StringIO(csv_content)
+    print(csv_content)
+    reader = csv.DictReader(f)
+    for row in reader:
+        cleaned_row = {key.lstrip('\ufeff'): value for key, value in row.items()}
+        csv_data.append(cleaned_row)
+    return csv_data
+
+
+def receipt_template_2(customer_id, items):
     buffer = BytesIO()
     doc = SimpleDocTemplate(buffer, pagesize=letter)
     styles = getSampleStyleSheet()
@@ -221,14 +318,13 @@ def receipt_template(customer_id, items):
     elements.append(Spacer(1,60))
     thank_you = Paragraph("Your payment has been received, thanks!", styles['Normal'])
     elements.append(thank_you)
-    elements.append(Spacer(1, 35)) 
-
+    elements.append(Spacer(1, 35))  
 
 
     payment_method_data = [
         [Paragraph("Payment method:", styles['Normal']), Paragraph(first_item.get('Payment Method', ''), styles['Normal'])]
     ]
-    payment_method_table = Table(payment_method_data, colWidths=[100, 80])
+    payment_method_table = Table(payment_method_data, colWidths=[100, 80]) 
     table_style_payment = TableStyle([
         ('GRID', (0, 0), (-1, -1), 1, colors.black),
         ('BACKGROUND', (0, 0), (0, 0), colors.beige),
@@ -238,6 +334,17 @@ def receipt_template(customer_id, items):
     payment_method_table.setStyle(table_style_payment)
 
     elements.append(ListFlowable([ListItem(payment_method_table, leftIndent=0)], bulletType='bullet'))
+
+
+
+    
+
+    doc.build(elements)
+    pdf_data = buffer.getvalue()
+    buffer.close()
+
+    return pdf_data
+
 
 def business_letter_template(csv_row):
     buffer = BytesIO()
@@ -284,38 +391,13 @@ def business_letter_template(csv_row):
 
     return pdf_data
 
-
-
 @login_required
 def template_choices(request):
     page = loader.get_template("pdfinstant/template_choices.html")
     return HttpResponse(page.render(request=request))
 
-
-@csrf_exempt
-def upload_csv(request):
-    if request.method == 'POST':
-        form = CSVUploadForm(request.POST, request.FILES)
-        if form.is_valid():
-            csv_file = request.FILES['file']
-            dataset = csv_file.read().decode('UTF-8')
-            request.session['csv_data'] = dataset
-            return redirect('template_choices')
-    else:
-        form = CSVUploadForm()
-    return render(request, 'csv_upload.html', {'form': form})
-
-def parse_csv(csv_content):
-    csv_data = []
-    f = StringIO(csv_content)
-    reader = csv.DictReader(f)
-    for row in reader:
-        cleaned_row = {key.lstrip('\ufeff').replace(' ', '_').strip(): value for key, value in row.items()}
-        csv_data.append(cleaned_row)
-    return csv_data
-
 def index(request):
-    page = loader.get_template("pdfinstant/index.html")
+    page = loader.get_template("pdfinstant/homepage.html")
     return HttpResponse(page.render(request=request))
 
 def homepage(request):
@@ -343,6 +425,12 @@ def signin(request):
 def signup(request):
     page = loader.get_template("pdfinstant/signup.html")
     return HttpResponse(page.render(request=request))
+
+@login_required
+def acprofile(request):
+    zip_files = ZipFile.objects.filter(user=request.user)
+    return render(request, 'pdfinstant/acprofile.html', {'zip_files': zip_files})
+
 
 def createaccount(request):
     error_message_context = {'alert': False, 'message': ''}
