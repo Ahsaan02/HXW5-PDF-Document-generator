@@ -24,6 +24,7 @@
                     <li><a href="/signout" {% if request.path == '/signout' %}class="current"{% endif %}>Sign Out</a></li>
                     {% else %}
                     <li><a href="/signin" {% if request.path == '/signin' %}class="current"{% endif %}>Sign In</a></li>
+                    <li><a href="/signup" {% if request.path == '/signup' %}class="current"{% endif %}>Sign Up</a></li>
                     {% endif %}
                 </ul>
                 
