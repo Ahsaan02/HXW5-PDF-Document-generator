@@ -9,7 +9,7 @@
 
 <div class="button-container">
     <h2>Template Choices:</h2>
-        <form action="{% url 'process_csv' %}" method="post">
+        <form id="pdfForm" action="{% url 'process_csv' %}" method="post">
         {% csrf_token %}
         <div class="template-grid">
             <label for="template1" class="responsive-box">
@@ -27,11 +27,24 @@
                 <p>Business Letter Template</p>
             </label>
         </div>
-        
         <div class="submit-btn-container">
-            <button type="submit" class="submit-btn" id="generatePdfBtn">Generate PDF</button>
+            <button type="button" class="submit-btn" id="generatePdfBtn">Generate PDF</button>
         </div>
     </form>
+</div>
+
+
+<div id="pdfActionModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <center>
+        <p>How would you like to proceed with the generated PDFs?</p>
+    </center>
+        <div class="modal-actions">
+            <button type="button" class="submit-btn" id="emailPdfs">Email PDFs</button>
+            <button type="button" class="submit-btn" id="downloadZip">Download PDFs</button>
+        </div>
+    </div>
 </div>
 
 
