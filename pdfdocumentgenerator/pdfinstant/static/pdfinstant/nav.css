@@ -4,6 +4,18 @@
     text-decoration: none;
 }
 
+body {
+    background-color: black;
+}
+
+/* body{
+    margin:0;
+    background-image: url(pdfdocumentgenerator\pdfinstant\static\pdfinstant\background.jpg);
+    background-size:cover;
+    background-repeat:no-repeat;
+    background-attachment:fixed;
+    background-position:center;
+  } */
 header {
     background: #0a0808;
     height: 60px;

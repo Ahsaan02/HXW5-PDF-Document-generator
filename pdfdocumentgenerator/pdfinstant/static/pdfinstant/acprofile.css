@@ -1,0 +1,37 @@
+.container {
+    width: 80%;
+    margin: 20px auto;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+}
+
+.zip-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.zip-table th, .zip-table td {
+    text-align: left;
+    padding: 12px;
+    border: 1px solid #ddd;
+}
+
+.zip-table th {
+    background-color: #f4f4f4;
+}
+
+.zip-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.zip-table a {
+    color: #337ab7;
+    text-decoration: none;
+}
+
+.zip-table a:hover {
+    text-decoration: underline;
+}

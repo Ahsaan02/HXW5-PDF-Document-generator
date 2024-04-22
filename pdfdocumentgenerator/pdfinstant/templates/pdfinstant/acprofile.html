@@ -8,14 +8,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PDFInstant - Home</title>
     {% load static %}
-    <link rel="stylesheet" href="{% static 'pdfinstant/signin.css' %}">
+    <link rel="stylesheet" href="{% static 'pdfinstant/acprofile.css' %}">
 </head>
 
 <body>
     <CENTER>
     <h4>USER PROFILE</h4>
 </CENTER>
-
+<div class="container">
+    <h2>PDF Batch Generated ZIP Files:</h2>
+    <table class="zip-table">
+        <thead>
+            <tr>
+                <th>Zip Name</th>
+                <th>Date Generated</th>
+                <th>Download</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for zip_file in zip_files %}
+            <tr>
+                <td>{{ zip_file.file_name }}</td>
+                <td>{{ zip_file.created_at|date:"Y-m-d H:i" }}</td>
+                <td><a href="{% url 'download_zip' zip_file.id %}">Download</a></td>
+                <td><a href="{% url 'delete_zip' zip_file.id %}">Delete</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 
     <script
     type="text/javascript"

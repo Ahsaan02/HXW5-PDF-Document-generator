@@ -5,6 +5,12 @@
 <html lang="en">
     <head>
         <link rel="stylesheet" href="{% static 'pdfinstant/nav.css' %}">
+        <style>
+            body{
+                /* background: url("{% static 'pdfinstant/images/background.jpg' %}") no-repeat center center fixed;
+                background-size: cover; */
+            }
+        </style>
     </head>
     <body>
         <header>
@@ -16,15 +22,15 @@
                     
                     {% if user.is_authenticated %}
                     <li><a href="/generatepdfsin" {% if request.path == '/generatepdfsin' %}class="current"{% endif %}>Generate PDFs</a></li>
-                    {% else %}
-                    <li><a href="/generatepdfs" {% if request.path == '/generatepdfs' %}class="current"{% endif %}>Generate PDFs</a></li>
-                    {% endif %}
-                    
-                    {% if user.is_authenticated %}
+                    <li><a href="/acprofile" {% if request.path == '/acprofile' %}class="current"{% endif %}>Account Profile</a></li>
                     <li><a href="/signout" {% if request.path == '/signout' %}class="current"{% endif %}>Sign Out</a></li>
                     {% else %}
+                    <li><a href="/generatepdfs" {% if request.path == '/generatepdfs' %}class="current"{% endif %}>Generate PDFs</a></li>
                     <li><a href="/signin" {% if request.path == '/signin' %}class="current"{% endif %}>Sign In</a></li>
-                    <li><a href="/signup" {% if request.path == '/signup' %}class="current"{% endif %}>Sign Up</a></li>
+                    {% endif %}
+                    {% if user.is_superuser %}
+                    <li><a href="/admin" {% if request.path == '/admin' %}class="current"{% endif %}>Admin Panel</a></li>
+                    {% else %}
                     {% endif %}
                 </ul>
                 

@@ -1,5 +1,4 @@
 {% extends 'pdfinstant/index.html' %}
-
 {% load static %}
 
 {% block title %}
@@ -10,15 +9,35 @@ PDFInstant - Generate PDFs
 <link rel="stylesheet" href="{% static 'pdfinstant/generatepdfsin.css' %}">
 <title>PDFInstant - Generate PDFs</title>
 
-<div class="button-container">
-    <div class="responsive-box">
-        <form action="{% url 'upload_csv' %}" method="post" enctype="multipart/form-data" class="upload-form">
-            {% csrf_token %}
-            <input type="file" id="csvFile" name="file" accept=".csv" hidden onchange="this.form.submit()">
-            <label for="csvFile" class="drag-drop-box">
-                <h3>Drag & Drop/Import CSV file</h3>            </label>
-        </form>
-    </div>
+<div class="sample-files">
+    <p>Download sample CSV files to ensure correct formatting:</p>
+    <ul>
+        <li><a href="{% static 'pdfinstant/CSV_Template_Samples/student_coursework.csv' %}" download>Student Coursework CSV Sample</a></li>
+        <li><a href="{% static 'pdfinstant/CSV_Template_Samples/receipt.csv' %}" download>Receipt CSV Sample</a></li>
+        <li><a href="{% static 'pdfinstant/CSV_Template_Samples/business_letter.csv' %}" download>Business Letter CSV Sample</a></li>
+    </ul>
 </div>
-{% endblock content %}
 
+
+
+    
+<div class="container">
+    <form action="{% url 'upload_csv' %}" method="post" enctype="multipart/form-data" class="upload-form">
+        {% csrf_token %}
+        <input type="file" id="csvFile" name="file" accept=".csv" hidden>
+        <div class="upload-box">
+            <span class="upload-instruction">Drag & Drop or Click to Import CSV file</span>
+            <label for="csvFile" class="upload-btn">Upload File</label>
+
+            {% if messages %}
+                <div class="messages">
+                    {% for message in messages %}
+                    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </form>
+</div>
+<script src="{% static 'pdfinstant/generatepdfsin.js' %}"></script>
+{% endblock content %}

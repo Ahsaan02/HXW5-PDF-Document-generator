@@ -1,19 +1,19 @@
 {% extends 'pdfinstant/index.html' %}
 
 {% load static %}
-
 {% block title %}
 PDFInstant - Sign Up
 {% endblock title %}
 
 {% block content %}
+<script type="text/javascript" src="{% static 'pdfinstant/signup.js' %}"></script>
 <link rel="stylesheet" href="{% static 'pdfinstant/signin.css' %}">
 <title>PDFInstant - Sign Up</title>
 
 {% if alert %}
-    <div class="error-message-popup">
-        {{ message }}
-    </div>
+<div class="error-message-popup">
+    {{ message }}
+</div>
 {% endif %}
 
 <form name="register" method="post" action="{% url 'createaccount' %}">
@@ -24,7 +24,7 @@ PDFInstant - Sign Up
             <center>
                 <script type="text/javascript">
                     showAlert("{{ message }}");
-                </script>
+                    </script>   
             </center>
             {% endif %}
             <div class="accountform-group">
@@ -44,6 +44,5 @@ PDFInstant - Sign Up
     </div>
 </form>
 
-<script type="text/javascript" src="{% static 'pdfinstant/signup.js' %}"></script>
 <script type="text/javascript" src="{% static 'pdfinstant/run.js' %}"></script>
 {% endblock content %}

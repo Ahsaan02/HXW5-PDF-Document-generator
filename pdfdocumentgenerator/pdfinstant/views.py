@@ -7,8 +7,11 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth.decorators import login_required
 from .forms import CSVUploadForm
 import csv
+from datetime import datetime
 from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
 from reportlab.lib import colors
+from reportlab.pdfgen import canvas
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, ListFlowable, ListItem
 from reportlab.lib.styles import getSampleStyleSheet
 from io import BytesIO
@@ -17,9 +20,30 @@ from django.urls import reverse
 from io import StringIO
 from collections import defaultdict
 from django.core.mail import EmailMessage
+import os
+import tempfile
+from django.core.mail import send_mail
 from django.conf import settings
+from .forms import ZipFileForm
 from .models import ZipFile
+from django.http import HttpResponseRedirect
+from django.contrib import messages
 
+@login_required
+def download_zip(request, file_id):
+    zip_file = get_object_or_404(ZipFile, id=file_id, user=request.user)
+    
+    response = HttpResponse(zip_file.file_content, content_type='application/zip')
+    
+    response['Content-Disposition'] = f'attachment; filename="{zip_file.file_name}"'
+    
+    return response
+
+@login_required
+def delete_zip(request, file_id):
+    zip_file = get_object_or_404(ZipFile, id=file_id, user=request.user)
+    zip_file.delete()
+    return redirect('acprofile') 
 
 def send_test_email(subject, body, recipient_email, pdf_content, custom_filename):
     email = EmailMessage(
@@ -31,9 +55,6 @@ def send_test_email(subject, body, recipient_email, pdf_content, custom_filename
     email.attach(custom_filename, pdf_content, 'application/pdf')
     email.send()
 
-
-
-
 def upload_csv(request):
     if request.method == 'POST':
         form = CSVUploadForm(request.POST, request.FILES)
@@ -42,10 +63,12 @@ def upload_csv(request):
             dataset = csv_file.read().decode('UTF-8')
             request.session['csv_data'] = dataset 
             return redirect(reverse('template_choices'))
+        else:
+            messages.error(request, "Invalid file type uploaded. Please upload a CSV file.")
+            return HttpResponseRedirect(request.path_info)
     else:
         form = CSVUploadForm()
-    return render(request, 'csv_upload.html', {'form': form})
-
+    return render(request, 'pdfinstant/generatepdfsin.html', {'form': form})
 
 def process_csv(request):
     if request.method == 'POST':
@@ -79,6 +102,7 @@ def process_csv(request):
             email_body = "Please find the attached business letter. We look forward to your response."
 
         if action == 'emailPdfs':
+            # Email the PDFs
             for filename, pdf_content, recipient_email in pdf_files:
                 custom_filename = filename
                 send_test_email(
@@ -88,8 +112,10 @@ def process_csv(request):
                     pdf_content,
                     custom_filename
                 )
+            request.session.pop('csv_data', None)
             return HttpResponse("Emails sent successfully.")
         else:
+            request.session.pop('csv_data', None)
             return generate_zip(request, pdf_files, template_type)
 
     else:
@@ -155,7 +181,7 @@ def cwf_template_1(items):
     elements.append(table)
     additional_comments = items[0].get('additional_comments', 'No additional comments provided.')
     elements.append(Paragraph("Additional Comments:", styles['Heading4']))
-    elements.append(Spacer(1, 6))
+    elements.append(Spacer(1, 6))  # Smaller spacer for a slight gap
     elements.append(Paragraph(additional_comments, styles['Normal']))
 
 
@@ -324,7 +350,7 @@ def receipt_template_2(customer_id, items):
     payment_method_data = [
         [Paragraph("Payment method:", styles['Normal']), Paragraph(first_item.get('Payment Method', ''), styles['Normal'])]
     ]
-    payment_method_table = Table(payment_method_data, colWidths=[100, 80]) 
+    payment_method_table = Table(payment_method_data, colWidths=[100, 80])  # Adjust the second colWidth as needed
     table_style_payment = TableStyle([
         ('GRID', (0, 0), (-1, -1), 1, colors.black),
         ('BACKGROUND', (0, 0), (0, 0), colors.beige),
@@ -353,14 +379,17 @@ def business_letter_template(csv_row):
 
     elements = []
 
+    # Sender's Information
     elements.append(Paragraph(csv_row['SenderName'], styles['Normal']))
     elements.append(Paragraph(csv_row['SenderAddress'], styles['Normal']))
     elements.append(Paragraph(csv_row['SenderCityZip'], styles['Normal']))
     elements.append(Spacer(1, 12))
 
+    # Date
     elements.append(Paragraph(csv_row['TodayDate'], styles['Normal']))
     elements.append(Spacer(1, 12))
 
+    # Recipient's Information
     elements.append(Paragraph(csv_row['RecipientName'], styles['Normal']))
     elements.append(Paragraph(csv_row['RecipientTitle'], styles['Normal']))
     elements.append(Paragraph(csv_row['RecipientCompany'], styles['Normal']))
@@ -368,15 +397,24 @@ def business_letter_template(csv_row):
     elements.append(Paragraph(csv_row['RecipientCityZip'], styles['Normal']))
     elements.append(Spacer(1, 30))
 
+    # Salutation
     elements.append(Paragraph(f"Dear {csv_row['RecipientName']},", styles['Normal']))
     elements.append(Spacer(1, 30))
 
+    # Body
     elements.append(Paragraph(csv_row['Introduction'], styles['Normal']))
     elements.append(Paragraph(csv_row['Body'], styles['Normal']))
     elements.append(Spacer(1, 30))
 
+    # Closing
     elements.append(Paragraph(csv_row['Closing'], styles['Normal']))
     elements.append(Spacer(1, 30))
+
+    # Signature
+    # if 'Signature' in csv_row:
+    #     elements.append(Paragraph(csv_row['Signature'], styles['Normal']))
+    # else:
+    #     elements.append(Spacer(1, 48))
 
     elements.append(Paragraph("Sincerely,", styles['Normal']))
     elements.append(Spacer(1, 20))
@@ -384,6 +422,7 @@ def business_letter_template(csv_row):
     if 'SenderTitle' in csv_row:
         elements.append(Paragraph(csv_row['SenderTitle'], styles['Normal']))
 
+    # Build PDF
     pdf.build(elements)
     buffer.seek(0)
     pdf_data = buffer.getvalue()

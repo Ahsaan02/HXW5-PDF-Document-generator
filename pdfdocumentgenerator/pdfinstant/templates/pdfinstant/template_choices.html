@@ -5,35 +5,40 @@
 {% block title %}PDFInstant - Choose Template{% endblock title %}
 
 {% block content %}
-<link rel="stylesheet" href="{% static 'pdfinstant/template_choices.css' %}">
+<link rel="stylesheet" href="{% static 'pdfinstant/template_selection.css' %}">
 
 <div class="button-container">
     <h2>Template Choices:</h2>
+    <!-- <form action="{% url 'process_csv' %}" method="post"> -->
         <form id="pdfForm" action="{% url 'process_csv' %}" method="post">
         {% csrf_token %}
         <div class="template-grid">
+            <!-- Template Option 1 -->
             <label for="template1" class="responsive-box">
                 <input type="radio" name="template" id="template1" value="template1">
                 <p>Coursework Feedback Template</p>
             </label>
             
+            <!-- Template Option 2 -->
             <label for="template2" class="responsive-box">
                 <input type="radio" name="template" id="template2" value="template2">
                 <p>Receipt Template</p>
             </label>
-
+            
+            <!-- Template Option 3 -->
             <label for="template3" class="responsive-box">
                 <input type="radio" name="template" id="template3" value="template3">
                 <p>Business Letter Template</p>
             </label>
         </div>
         <div class="submit-btn-container">
+            <!-- <button type="submit" class="submit-btn">Generate PDF</button> -->
             <button type="button" class="submit-btn" id="generatePdfBtn">Generate PDF</button>
         </div>
     </form>
 </div>
 
-
+<!-- Modal -->
 <div id="pdfActionModal" class="modal">
     <div class="modal-content">
         <span class="close">&times;</span>
@@ -48,9 +53,101 @@
 </div>
 
 
+<!-- <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const radios = document.querySelectorAll('input[type="radio"][name="template"]');
+        radios.forEach(radio => {
+            radio.addEventListener('change', () => {
+                radios.forEach(radio => radio.closest('.responsive-box').classList.remove('selected'));
+                radio.closest('.responsive-box').classList.add('selected');
+            });
+        });
+    });
 
-<script
-type="text/javascript"
-src="{% static 'pdfinstant/template_choices.js' %}"
-></script>
+    document.addEventListener('DOMContentLoaded', () => {
+    const generatePdfBtn = document.getElementById('generatePdfBtn');
+    const modal = document.getElementById('pdfActionModal');
+    const span = document.getElementsByClassName("close")[0];
+    const emailPdfsBtn = document.getElementById('emailPdfs');
+    const downloadZipBtn = document.getElementById('downloadZip');
+
+    generatePdfBtn.onclick = function() {
+        modal.style.display = "block";
+    }
+
+    span.onclick = function() {
+        modal.style.display = "none";
+    }
+
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+});
+</script> -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Handling template selection visual feedback
+        const radios = document.querySelectorAll('input[type="radio"][name="template"]');
+        radios.forEach(radio => {
+            radio.addEventListener('change', () => {
+                radios.forEach(radio => radio.closest('.responsive-box').classList.remove('selected'));
+                radio.closest('.responsive-box').classList.add('selected');
+            });
+        });
+
+        // Handling the PDF generation action modal
+        const generatePdfBtn = document.getElementById('generatePdfBtn');
+        const modal = document.getElementById('pdfActionModal');
+        const span = document.getElementsByClassName("close")[0];
+        const emailPdfsBtn = document.getElementById('emailPdfs');
+        const downloadZipBtn = document.getElementById('downloadZip');
+        const pdfForm = document.getElementById('pdfForm'); // Ensure your form has an ID
+
+        generatePdfBtn.onclick = function() {
+            modal.style.display = "block";
+        }
+
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        // Function to remove any previously added action input
+        function removeActionInput() {
+            const existingActionInput = pdfForm.querySelector('input[name="action"]');
+            if (existingActionInput) {
+                pdfForm.removeChild(existingActionInput);
+            }
+        }
+
+        emailPdfsBtn.addEventListener('click', () => {
+            removeActionInput();
+
+            // Add hidden input to specify emailing action
+            const emailActionInput = document.createElement('input');
+            emailActionInput.setAttribute('type', 'hidden');
+            emailActionInput.setAttribute('name', 'action');
+            emailActionInput.setAttribute('value', 'emailPdfs');
+            pdfForm.appendChild(emailActionInput);
+
+            // Submit the form
+            pdfForm.submit();
+        });
+
+        downloadZipBtn.addEventListener('click', () => {
+            removeActionInput();
+
+            // Submit the form normally without adding any action
+            pdfForm.submit();
+        });
+    });
+</script>
+
 {% endblock content %}
